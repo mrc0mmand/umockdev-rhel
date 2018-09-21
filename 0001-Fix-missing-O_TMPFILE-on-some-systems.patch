@@ -1,0 +1,43 @@
+From 601a30e818b9784f87691c4a358363b710d00882 Mon Sep 17 00:00:00 2001
+From: Frantisek Sumsal <fsumsal@redhat.com>
+Date: Fri, 21 Sep 2018 16:52:09 +0200
+Subject: [PATCH] Fix missing O_TMPFILE on some systems
+
+---
+ src/libumockdev-preload.c | 4 ++++
+ tests/test-umockdev.c     | 4 ++++
+ 2 files changed, 8 insertions(+)
+
+diff --git a/src/libumockdev-preload.c b/src/libumockdev-preload.c
+index c3c7df6..4444ed8 100644
+--- a/src/libumockdev-preload.c
++++ b/src/libumockdev-preload.c
+@@ -24,6 +24,10 @@
+ 
+ /* for getting stat64 */
+ #define _GNU_SOURCE
++/* fix missing O_TMPFILE on some systems */
++#ifndef O_TMPFILE
++#define O_TMPFILE (__O_TMPFILE | O_DIRECTORY)
++#endif
+ 
+ #include <assert.h>
+ #include <errno.h>
+diff --git a/tests/test-umockdev.c b/tests/test-umockdev.c
+index 6e31aad..de7bcf5 100644
+--- a/tests/test-umockdev.c
++++ b/tests/test-umockdev.c
+@@ -21,6 +21,10 @@
+ 
+ /* for O_TMPFILE */
+ #define _GNU_SOURCE
++/* fix missing O_TMPFILE on some systems */
++#ifndef O_TMPFILE
++#define O_TMPFILE (__O_TMPFILE | O_DIRECTORY)
++#endif
+ 
+ #include <glib.h>
+ #include <glib/gstdio.h>
+-- 
+2.17.1
+
