@@ -10,7 +10,7 @@ Source: https://github.com/martinpitt/umockdev/archive/%{version}.tar.gz#/%{name
 BuildRequires: autoconf
 BuildRequires: automake
 BuildRequires: chrpath
-Buildrequires: git
+BuildRequires: git
 BuildRequires: glib2-devel
 BuildRequires: gtk-doc
 BuildRequires: libgudev1-devel
