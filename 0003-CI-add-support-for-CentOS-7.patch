@@ -1,0 +1,56 @@
+From 1634b816640f38d52cb0be30164d45cb5dfc22c3 Mon Sep 17 00:00:00 2001
+From: Frantisek Sumsal <frantisek@sumsal.cz>
+Date: Sat, 22 Sep 2018 18:46:40 +0200
+Subject: [PATCH 3/3] CI: add support for CentOS 7
+
+---
+ .travis.yml             |  1 +
+ tests/run-centos-docker | 24 ++++++++++++++++++++++++
+ 2 files changed, 25 insertions(+)
+ create mode 100755 tests/run-centos-docker
+
+diff --git a/.travis.yml b/.travis.yml
+index 7155ae9..2eb814d 100644
+--- a/.travis.yml
++++ b/.travis.yml
+@@ -9,6 +9,7 @@ env:
+ - TEST=tests/run-ubuntu-chroot RELEASE=bionic ARCH=i386
+ - TEST=tests/run-ubuntu-chroot RELEASE=xenial
+ - TEST=tests/run-alpine-docker RELEASE=latest
++- TEST=tests/run-centos-docker RELEASE=7
+ script: $TEST
+ cache:
+   directories:
+diff --git a/tests/run-centos-docker b/tests/run-centos-docker
+new file mode 100755
+index 0000000..6e479bf
+--- /dev/null
++++ b/tests/run-centos-docker
+@@ -0,0 +1,24 @@
++#!/bin/sh
++set -eu
++
++# keep container around if $DEBUG is set, and allow strace
++RM=""
++[ -n "${DEBUG:-}" ] && OPTS="--privileged" || OPTS="--rm"
++
++sudo docker run --interactive $OPTS --volume `pwd`:/source centos:${RELEASE:-latest} /bin/sh << EOF
++
++# install build dependencies
++yum -y install autoconf automake gcc glib2-devel gtk-doc libgudev1-devel libtool libudev-devel make python-gobject usbutils vala
++
++# run build as user
++useradd guest
++su -s /bin/sh - guest << EOG
++set -ex
++cp -r /source /tmp
++cd /tmp/source
++./autogen.sh
++make -j4
++make check
++EOG
++
++EOF
+-- 
+2.17.1
+

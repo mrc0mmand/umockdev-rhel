@@ -1,10 +1,11 @@
 Name: umockdev
 Version: 0.12
-Release: 2%{?dist}
+Release: 3%{?dist}
 Summary: Mock hardware devices for creating unit tests and bug reporting
 
 License: LGPLv2+
 URL: https://github.com/martinpitt/%{name}
+Group: Development/Libraries
 Source: https://github.com/martinpitt/umockdev/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
 
 BuildRequires: autoconf
@@ -17,8 +18,13 @@ BuildRequires: libgudev1-devel
 BuildRequires: libtool
 BuildRequires: libudev-devel
 BuildRequires: vala
+# Tests requirements
+BuildRequires: python-gobject
+BuildRequires: usbutils
 
 Patch0: 0001-Fix-missing-O_TMPFILE-on-some-systems.patch
+Patch1: 0002-tests-support-older-python-versions.patch
+Patch2: 0003-CI-add-support-for-CentOS-7.patch
 
 %description
 With this program and libraries you can easily create mock udev objects.
@@ -60,8 +66,6 @@ rm -rf $RPM_BUILD_ROOT/%{_datadir}/doc/umockdev
 
 %check
 
-# Disabled for now, as the Xorg tests don't pass
-# https://github.com/martinpitt/umockdev/issues/47
 make check
 
 %post -p /sbin/ldconfig
@@ -86,6 +90,11 @@ make check
 %{_datadir}/vala/vapi/umockdev-1.0.vapi
 
 %changelog
+* Sun Sep 23 2018 Frantisek Sumsal <frantisek@sumsal.cz> - 0.12-3
+- Add missing test dependencies
+- Add the upstream-accepted version of the O_TMPFILE patch (PR#85)
+- Fix tests which require python-gobject (PR#86)
+
 * Fri Sep 21 2018 Frantisek Sumsal <frantisek@sumsal.cz> - 0.12-2
 - Use specfile structure from the Fedora package (by Bastien Nocera)
 - Patch for missing O_TMPFILE on some systems
